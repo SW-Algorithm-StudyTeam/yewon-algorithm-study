@@ -1,34 +1,39 @@
 import java.io.*;
-import java.util.StringTokenizer;
-import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
-        StringTokenizer st;
         
-        // 구간합, 합 배열
+        // 투 포인터를 이용해..
+        // 시작 인덱스, 종료 인덱스를 이용
+        // 아~ 시작 인덱스 값 vs 종료 인덱스 값 비교해
+        // sum < 종.값 -> 종.인 한 칸 이동
+        // sum == 종.값 -> 찾았다! count++
+        // sum > 종.값 -> 시.인 한 칸 이동.. 뭔지 알겠죠?
         
-        st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        
-        long arr[] = new long[N + 1]; // int 대신 long 형으로 선언하는 습관!
-        st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= N; i++) {
-        	arr[i] = arr[i - 1] + Integer.parseInt(st.nextToken());
+        int N = Integer.parseInt(br.readLine());
+        int start, end, cnt, sum = 1;
+        start = 1; // index 0 무시하고, index가 곧 값인 것으로 다룰게요
+        end = 1;
+        cnt = 1; // 자기 자신 하나로 이루어진 경우의 수 미리 저장
+        while(end != N) {
+        	if (sum < N) {
+        		end++;
+        		sum += end;
+        	}
+        	else if (sum == N) {
+        		cnt++;
+        		end++;
+        		sum += end;
+        	}
+        	else {
+        		// sum > N
+        		sum -= start;
+        		start++;
+        	}
         }
-        
-        int a, b;
-        for (int i = 0; i < M; i++) {
-        	st = new StringTokenizer(br.readLine());
-        	a = Integer.parseInt(st.nextToken());
-        	b = Integer.parseInt(st.nextToken());
-        	bw.write(String.valueOf(arr[b] - arr[a-1]));
-        	bw.write(String.valueOf("\n"));
-        }
+        bw.write(String.valueOf(cnt));
         bw.flush();
     }
 }
