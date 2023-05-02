@@ -1,36 +1,42 @@
 import java.io.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st;
         
-        // 투 포인터를 이용해..
-        // 시작 인덱스, 종료 인덱스를 이용
-        // 아~ 시작 인덱스 값 vs 종료 인덱스 값 비교해
-        // sum < 종.값 -> 종.인 한 칸 이동
-        // sum == 종.값 -> 찾았다! count++
-        // sum > 종.값 -> 시.인 한 칸 이동.. 뭔지 알겠죠?
+        // 이 문제를 보고 어떻게 투 포인터를 떠올리지? 이걸 어떻게 생각하지?
+        // 많이 풀다보면..
+        // 흠! 이 데이터들이 유니크하고? 한 번 쓰면 없어지는 데이터네?
+        // 얘네를 두 개를 어떻게 뽑아서 값이 나오게 하지?
+        // 어떻게 빨리 찾지?.. 같은 생각을 하다보면 언젠가는 자연스럽게 떠오를 거예요
         
         int N = Integer.parseInt(br.readLine());
-        int start, end, cnt, sum = 1;
-        start = 1; // index 0 무시하고, index가 곧 값인 것으로 다룰게요
-        end = 1;
-        cnt = 1; // 자기 자신 하나로 이루어진 경우의 수 미리 저장
-        while(end != N) {
-        	if (sum < N) {
-        		end++;
-        		sum += end;
-        	}
-        	else if (sum == N) {
-        		cnt++;
-        		end++;
-        		sum += end;
-        	}
+        int M = Integer.parseInt(br.readLine());
+        
+        long arr[] = new long[N];
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+        	arr[i] = Integer.parseInt(st.nextToken());
+        }
+        Arrays.sort(arr); // 투 포인터 문제는 거의..
+        // 정렬을 해야하거나! 정렬이 된 채로 주어지거나!
+        
+        int i, j, cnt = 0;
+        i = 0;
+        j = N - 1;
+        while (i < j) {
+        	// ..아.
+        	// 두 개의 재료만 사용하는 구나
+        	if (arr[i] + arr[j] < M) i++;
+        	else if (arr[i] + arr[j] > M) j--;
         	else {
-        		// sum > N
-        		sum -= start;
-        		start++;
+        		cnt++;
+        		i++;
+        		j--;
         	}
         }
         bw.write(String.valueOf(cnt));
