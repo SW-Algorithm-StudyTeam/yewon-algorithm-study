@@ -1,45 +1,103 @@
 import java.io.*;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
+	static int checkArr[];
+	static int myArr[];
+	static int checkSecret;
+	
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st;
         
-        // 이 문제를 보고 어떻게 투 포인터를 떠올리지? 이걸 어떻게 생각하지?
-        // 많이 풀다보면..
-        // 흠! 이 데이터들이 유니크하고? 한 번 쓰면 없어지는 데이터네?
-        // 얘네를 두 개를 어떻게 뽑아서 값이 나오게 하지?
-        // 어떻게 빨리 찾지?.. 같은 생각을 하다보면 언젠가는 자연스럽게 떠오를 거예요
+        // 슬라이딩 윈도우 알고리즘 -> 로직 간단해요! 응용이 중요.. 시간 복잡도도 좋거든요 O(n)
+        // 범위를 지정 하고
+        // 범위 유지한 채로 움직여요(투 포인터랑 다르죠)
+        // 투 포인터랑 비슷한데? 자자 감 잡아보자구요
+        // 양 끝 두 개의 데이터만 넣고 빼고 해주면 되는데..
         
-        int N = Integer.parseInt(br.readLine());
-        int M = Integer.parseInt(br.readLine());
+        // 부분문자열의 길이 4
         
-        long arr[] = new long[N];
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) {
-        	arr[i] = Integer.parseInt(st.nextToken());
-        }
-        Arrays.sort(arr); // 투 포인터 문제는 거의..
-        // 정렬을 해야하거나! 정렬이 된 채로 주어지거나!
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int result = 0;
         
-        int i, j, cnt = 0;
-        i = 0;
-        j = N - 1;
-        while (i < j) {
-        	// ..아.
-        	// 두 개의 재료만 사용하는 구나
-        	if (arr[i] + arr[j] < M) i++;
-        	else if (arr[i] + arr[j] > M) j--;
-        	else {
-        		cnt++;
-        		i++;
-        		j--;
+        checkArr = new int[4]; // 문제의 조건
+        myArr = new int[4]; // 현재 상태 배열
+        char arr[] = new char[N];
+        checkSecret = 0; // 조건 체크하면서, 조건에 부합하면 ++! 얘가 4가 되면? 올바른 문자열 인거겠죠
+        
+        arr = br.readLine().toCharArray();
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < 4; i++) {
+        	checkArr[i] = Integer.parseInt(st.nextToken());
+        	if (checkArr[i] == 0) {
+        		// 네 개를 만족해야 하는데, 이게 0이라는 건? 이미 만족을 했다는 뜻
+        		checkSecret++;
         	}
         }
-        bw.write(String.valueOf(cnt));
+        
+        for (int i = 0; i < M; i++) { // 문자열 처음 받을 때 세팅
+        	Add(arr[i]);
+        }
+        
+        if (checkSecret == 4) result++; // 첫 문자열 부터 만족할 수도 있으니까
+        
+        // 슬라이딩 윈도우
+        for (int i = M; i < N; i++) {
+        	int j = i - M; // i: 맨 오른쪽, j: 맨 왼쪽
+        	Add(arr[i]); // 들어갈 때는, i만 들어가면 되죠?
+        	Remove(arr[j]);
+        	if (checkSecret == 4) result++; // 첫 문자열 부터 만족할 수도 있으니까
+        }
+        bw.write(String.valueOf(result));
+        
         bw.flush();
+        br.close();
+        bw.close();
+    }
+    
+    static void Add(char c) {
+    	switch (c) {
+    	case 'A':
+    		myArr[0]++;
+    		if (myArr[0] == checkArr[0]) checkSecret++;
+    		break;
+    	case 'C':
+    		myArr[1]++;
+    		if (myArr[1] == checkArr[1]) checkSecret++;
+    		break;
+    	case 'G':
+    		myArr[2]++;
+    		if (myArr[2] == checkArr[2]) checkSecret++;
+    		break;
+    	case 'T':
+    		myArr[3]++;
+    		if (myArr[3] == checkArr[3]) checkSecret++;
+    		break;
+    	}
+    }
+    
+    static void Remove(char c) {
+    	switch (c) {
+    	case 'A':
+    		if (myArr[0] == checkArr[0]) checkSecret--; // 먼저 확인을 하고
+    		myArr[0]--; // 빼줌
+    		break;
+    	case 'C':
+    		if (myArr[1] == checkArr[1]) checkSecret--;
+    		myArr[1]--;
+    		break;
+    	case 'G':
+    		if (myArr[2] == checkArr[2]) checkSecret--;
+    		myArr[2]--;
+    		break;
+    	case 'T':
+    		if (myArr[3] == checkArr[3]) checkSecret--;
+    		myArr[3]--;
+    		break;
+    	}
     }
 }
