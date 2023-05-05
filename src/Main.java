@@ -1,50 +1,25 @@
 import java.io.*;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class Main {
-	static int checkArr[];
-	static int myArr[];
-	static int checkSecret;
-	
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 //        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         
         int N = Integer.parseInt(br.readLine());
-        int arr[] = new int[N];
-        for (int i = 0; i < N; i++) {
-        	int tmp = Integer.parseInt(br.readLine());
-        	arr[i] = tmp;
+        Deque<Integer> q = new ArrayDeque<>(N);
+        for (int i = N; i > 0; i--) {
+        	q.add(i); // 4, 3, 2, 1 ..
         }
         
-        int num = 1;
-        boolean result = true;
-        Stack<Integer> s = new Stack<>();
-        StringBuffer bf = new StringBuffer();
-        for (int i = 0; i < N; i++) {
-        	int tmp = arr[i];
-        	if (arr[i] >= num) {
-        		while (arr[i] >= num) {
-        			s.push(num++);
-        			bf.append("+\n");
-        		}
-        		s.pop();
-        		bf.append("-\n");
-        	}
-        	else {
-        		int n = s.pop();
-        		if (n > tmp) {
-        			System.out.println("NO");
-        			result = false;
-        			break;
-        		}
-        		else {
-        			bf.append("-\n");
-        		}
-        	}
+        while (q.size() > 1) {
+        	q.removeLast(); // 432
+        	int tmp = q.peekLast(); // 2
+        	q.addFirst(tmp); // 2432
+        	q.removeLast(); // 243
         }
-        if (result) System.out.println(bf.toString());
-        
+        System.out.println(q.peek());
         br.close();
     }
 }
