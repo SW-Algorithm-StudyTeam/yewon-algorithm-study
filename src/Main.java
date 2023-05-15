@@ -1,41 +1,37 @@
 import java.io.*;
-import java.util.PriorityQueue;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        
+        // 수 정렬하기
+        // Array.sort() 말고, 버블정렬을 직접 사용해 봅시다..
         
         int N = Integer.parseInt(br.readLine());
-        PriorityQueue<Integer> myQueue = new PriorityQueue<>((o1, o2) -> {
-        	// 우선순위 어떻게 커스터마이징 해볼게요 with 람다식
-        	// Comparator
-        	// compare return이..
-        	// - 양수 -> 첫 번째 매개변수가 더 큰 값으로 판단
-        	// - 0 -> 같은 값으로 판단
-        	// - 음수 -> 첫 번째 매개변수가 더 작은 값으로 판단
-        	
-        	int first_abs = Math.abs(o1);
-        	int second_abs = Math.abs(o2);
-        	if (first_abs == second_abs) { // 절대값이 같은 경우, 음수 우선
-        		return o1 > o2 ? 1 : -1;
-        	}
-        	return first_abs - second_abs; // 절대값이 작은 데이터 우선..
-        	// heap 생각해요
-        });
+        int arr[] = new int[N];
+        
         for (int i = 0; i < N; i++) {
-        	int tmp = Integer.parseInt(br.readLine());
-        	if (tmp == 0) {
-        		if (myQueue.isEmpty()) {
-        			System.out.println("0");
+        	arr[i] = Integer.parseInt(br.readLine());
+        }
+        
+        for (int i = 0; i < N - 1; i++) {
+        	for (int j = 0; j < N - 1 - i; j++) {
+        		if (arr[j] > arr[j+1]) {
+        			int tmp = arr[j];
+        			arr[j] = arr[j+1];
+        			arr[j+1] = tmp;
         		}
-        		else {
-        			System.out.println(myQueue.poll());
-        		}
-        	}
-        	else {
-        		myQueue.add(tmp);
         	}
         }
+        
+        for (int i = 0; i < N; i++) {
+        	bw.write(String.valueOf(arr[i]));
+        	bw.write(String.valueOf("\n"));
+        }
+        
+        bw.flush();
         br.close();
+        bw.close();
     }
 }
