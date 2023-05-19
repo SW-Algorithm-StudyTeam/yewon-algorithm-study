@@ -1,67 +1,68 @@
 import java.io.*;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
-    static boolean visited[];
-    static ArrayList<Integer>[] arr;
-
+    static int[] dx = {0, 1, 0, -1};
+    static int[] dy = {1, 0, -1, 0};
+    static boolean[][] visited;
+    static int[][] A;
+    static int N, M;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         /*
-        DFS가 몇 번 돌아야 모든 노드를 탐색하게 되는지 구하는 문제
-
-        입력 데이터들로, 인접리스트를 사용해서 DFS를 재현해보는 게 중요하겠네요
-
-        (중요) 문제에 방향이 주어지지 않음 -> 양방향 이구나..
-        3에서 4로 갈 수 있다면
-        4에서도 3으로 갈 수 있는 것
-
-        (중요) 방문 배열이 모두 T가 됐다? -> 현재 주어진 그래프의 모든 노드들을 탐색했다
-        */
+        * 미로 찾기
+        *
+        * '1'로 표현된 칸으로 이어진 길..
+        * (1, 1)에서 (N, M)까지 가는 최단거리 얼마일까?
+        *
+        * DFS, BFS 모두 사용 가능해요
+        * 근데? 최단거리 문제에서는 BFS가 유리합니다
+        * BFS는, 해당 깊이에서 갈 수 있는 노드 탐색을 마친 후 다음 깊이로 넘어가기 때문에..
+        * BFS로 목적지에 도달하는 경로 찾았다? 찾는 순간 그 경로가 바로 최단경로 인거예요
+        * */
 
         StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
 
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
+        A = new int[N][M];
+        visited = new boolean[N][M];
 
-        visited = new boolean[n+1]; // 방문 배열
-        arr = new ArrayList[n+1];
-
-        for (int i = 1; i < n+1; i++) {
-            arr[i] = new ArrayList<Integer>();
-        }
-        for (int i = 0; i < m; i++) {
+        for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            int s = Integer.parseInt(st.nextToken());
-            int e = Integer.parseInt(st.nextToken());
-            arr[s].add(e); // 양방향 이니까, 둘 다 add
-            arr[e].add(s);
-        }
-
-        int cnt = 0;
-        for (int i = 1; i < n+1; i++) {
-            if (!visited[i]) {
-                cnt++;
-                DFS(i);
+            String line = st.nextToken(); // 한 줄 통째로 받아와서
+            for (int j = 0; j < M; j++) {
+                A[i][j] = Integer.parseInt(line.substring(j, j+1)); // 하나씩 끊어서 숫자 넣을게요
             }
         }
-        System.out.println(cnt);
+        BFS(0, 0);
+        System.out.println(A[N-1][M-1]);
 
         br.close();
     }
 
-    private static void DFS(int v) {
-        if (visited[v]) {
-            // 현재 노드가 방문 노드 이면~
-            return; // 더이상 탐색하지 않음
-        }
-        visited[v] = true; // 방문 했어요
-        for (int i : arr[v]) {
-            if (!visited[i]) {
-                // 아직 탐색하지 않은 노드가 있다면
-                DFS(i);
+    private static void BFS(int i, int j) {
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[] {i, j});
+        visited[i][j] = true;
+        while(!queue.isEmpty()) {
+            // 더이상 BFS를 할 수 없게 될 때까지
+            int now[] = queue.poll();
+            for (int k = 0; k < 4; k++) {
+                // 상하좌우 탐색
+                int x = now[0] + dx[k];
+                int y = now[1] + dy[k];
+
+                if (x >= 0 && y >= 0 && x < N && y < M) {
+                    if (A[x][y] != 0 && !visited[x][y]) {
+                        visited[x][y] = true;
+                        A[x][y] = A[now[0]][now[1]] + 1; // *핵심*
+                        queue.add(new int[] {x, y});
+                    }
+                }
             }
         }
     }
